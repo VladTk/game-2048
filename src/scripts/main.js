@@ -10,6 +10,12 @@ const startMessage = document.querySelector('.message--start');
 const game = new Game(gameField);
 const { DIRECTIONS } = Game;
 
+let touchStartX = null;
+let touchStartY = null;
+const SWIPE_THRESHOLD = 30;
+
+button.addEventListener('click', handleButtonClick);
+
 function handleButtonClick() {
   if (game.status === Game.GAME_STATUS.idle) {
     startGame();
@@ -18,7 +24,62 @@ function handleButtonClick() {
   }
 }
 
-async function handleInput(e) {
+function handleTouchStart(e) {
+  e.preventDefault();
+
+  const touch = e.changedTouches[0];
+
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+}
+
+async function handleTouchEnd(e) {
+  e.preventDefault();
+
+  const touch = e.changedTouches[0];
+  const dx = touch.clientX - touchStartX;
+  const dy = touch.clientY - touchStartY;
+
+  if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) {
+    return;
+  }
+
+  let direction;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    direction = dx > 0 ? DIRECTIONS.RIGHT : DIRECTIONS.LEFT;
+  } else {
+    direction = dy > 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP;
+  }
+
+  await processMove(direction);
+}
+
+async function processMove(direction) {
+  const moved = await game.tryMove(direction);
+
+  if (moved) {
+    updateScore();
+
+    if (game.isWin) {
+      winMessage.classList.remove('hidden');
+      removeTouchListeners();
+
+      return;
+    }
+
+    if (game.isGameOver) {
+      loseMessage.classList.remove('hidden');
+      removeTouchListeners();
+
+      return;
+    }
+  }
+
+  setupInput();
+}
+
+async function handleKeyDown(e) {
   const direction = {
     ArrowUp: DIRECTIONS.UP,
     ArrowDown: DIRECTIONS.DOWN,
@@ -32,29 +93,11 @@ async function handleInput(e) {
     return;
   }
 
-  const moved = await game.tryMove(direction);
-
-  if (moved) {
-    updateScore();
-
-    if (game.isWin) {
-      winMessage.classList.remove('hidden');
-
-      return;
-    }
-
-    if (game.isGameOver) {
-      loseMessage.classList.remove('hidden');
-
-      return;
-    }
-  }
-
-  setupInput();
+  await processMove(direction);
 }
 
 function setupInput() {
-  window.addEventListener('keydown', handleInput, { once: true });
+  window.addEventListener('keydown', handleKeyDown, { once: true });
 }
 
 function updateScore() {
@@ -69,6 +112,9 @@ function startGame() {
 
   game.start();
   setupInput();
+
+  gameField.addEventListener('touchstart', handleTouchStart);
+  gameField.addEventListener('touchend', handleTouchEnd);
 }
 
 function restartGame() {
@@ -82,6 +128,10 @@ function restartGame() {
 
   game.restart();
   updateScore();
+  removeTouchListeners();
 }
 
-button.addEventListener('click', handleButtonClick);
+function removeTouchListeners() {
+  gameField.removeEventListener('touchstart', handleTouchStart);
+  gameField.removeEventListener('touchend', handleTouchEnd);
+}
