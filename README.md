@@ -30,7 +30,7 @@ Play the game online: [2048 Game Demo](https://vladtk.github.io/game-2048/)
   - **Cell:** Represents individual grid cells
   - **Tile:** Manages tile values, transitions, and merging
 
-* **Animations:** Smooth movement and merging animations using **transitionend** and **animationend** event listeners.
+* **Animations:** Smooth movement and merging animations.
 
 * **Keyboard Controls:** Arrow key support for tile movement.
 
