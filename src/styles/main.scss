@@ -1,3 +1,259 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+:root {
+  --grid-size: 4;
+  --cell-size: 12vmin;
+  --cell-gap: 1.5vmin;
+
+  @media (max-width: 640px) {
+    --cell-size: 20vmin;
+    --cell-gap: 2vmin;
+  }
+}
+
 body {
   margin: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #fbf8ef;
+  font-size: 4.5vmin;
+  font-weight: 700;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 6.25vmin;
+  max-width: 100vmin;
+  margin-top: 10vmin;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    gap: calc(var(--cell-size) + var(--cell-gap) + var(--cell-gap));
+    margin-bottom: 2vmin;
+    padding: var(--cell-gap);
+  }
+
+  &__title {
+    font-size: 4.5vmin;
+    background-color: #edc22e;
+    color: #f9f6f2;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border-radius: 1vmin;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+
+    @media (max-width: 640px) {
+      font-size: 6vmin;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    column-gap: var(--cell-gap);
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #d6cdc4;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border-radius: 1vmin;
+    color: #776e65;
+    font-size: 3.5vmin;
+
+    @media (max-width: 640px) {
+      font-size: 5vmin;
+    }
+  }
+
+  &__score {
+    font-size: 3.25vmin;
+
+    @media (max-width: 640px) {
+      font-size: 5vmin;
+    }
+  }
+
+  &__field {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-size), var(--cell-size));
+    grid-template-rows: repeat(var(--grid-size), var(--cell-size));
+    background-color: #bbada0;
+    gap: var(--cell-gap);
+    border-radius: 1vmin;
+    padding: var(--cell-gap);
+    position: relative;
+    margin-bottom: 4vmin;
+  }
+
+  &__cell {
+    background-color: #d6cdc4;
+    border-radius: 1vmin;
+  }
+
+  &__tile {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border-radius: 1vmin;
+    top: calc(
+      var(--y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap)
+    );
+    left: calc(
+      var(--x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap)
+    );
+    font-weight: bold;
+    background-color: #d6cdc4;
+    color: #776e65;
+    animation: show 200ms ease-in-out;
+    transition: 100ms ease-in-out;
+
+    @media (max-width: 640px) {
+      font-size: 6vmin;
+    }
+
+    &--2 {
+      background-color: #eee4da;
+    }
+
+    &--4 {
+      background-color: #ede0c8;
+    }
+
+    &--8 {
+      background-color: #f2b179;
+      color: #f9f6f2;
+    }
+
+    &--16 {
+      background-color: #f59563;
+      color: #f9f6f2;
+    }
+
+    &--32 {
+      background-color: #f67c5f;
+      color: #f9f6f2;
+    }
+
+    &--64 {
+      background-color: #f65e3b;
+      color: #f9f6f2;
+    }
+
+    &--128 {
+      background-color: #edcf72;
+      color: #f9f6f2;
+    }
+
+    &--256 {
+      background-color: #edcc61;
+      color: #f9f6f2;
+    }
+
+    &--512 {
+      background-color: #edc850;
+      color: #f9f6f2;
+    }
+
+    &--1024 {
+      background-color: #edc53f;
+      color: #f9f6f2;
+    }
+
+    &--2048 {
+      background-color: #edc22e;
+      color: #f9f6f2;
+    }
+  }
+}
+
+.button {
+  border: none;
+  border-radius: 1vmin;
+  cursor: pointer;
+  color: #f9f6f2;
+  font-weight: 700;
+  font-size: 3.5vmin;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  transition: background-color 0.25s ease;
+
+  @media (max-width: 640px) {
+    font-size: 5vmin;
+  }
+
+  &--start {
+    background-color: #1dae28;
+
+    &:hover {
+      background-color: #179921;
+    }
+  }
+
+  &--restart {
+    background-color: #f1b2b2;
+    font-size: 3vmin;
+
+    @media (max-width: 640px) {
+      font-size: 5vmin;
+    }
+
+    &:hover {
+      background-color: #f87474;
+    }
+  }
+}
+
+.message-container {
+  width: 100%;
+  height: 28vmin;
+}
+
+.message {
+  width: 100%;
+  background-color: #d6cdc4;
+  color: #776e65;
+  padding: 1.5vmin;
+  text-align: center;
+  border-radius: 1vmin;
+  font-size: 3.5vmin;
+
+  @media (max-width: 640px) {
+    font-size: 5vmin;
+  }
+
+  &--win {
+    background-color: #edc22e;
+    color: #f9f6f2;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0.5;
+    transform: scale(0);
+  }
 }
